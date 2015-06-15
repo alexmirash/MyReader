@@ -11,7 +11,7 @@ public class ScrollProperties {
     public ScrollProperties() {
         mScrollType = ScrollType.VERIICAL;
         mScrollEffectDuration = 500;
-        mMinimalFlingSwapPageDistance = 300;
+        mMinimalFlingSwapPageDistance = 500;
     }
 
     public float getMinimalFlingSwapPageDistance() {

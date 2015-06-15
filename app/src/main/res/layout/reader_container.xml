@@ -1,0 +1,13 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+    <alex.mirash.mirashreader.content.views.ReaderFrameSwitcherView
+        android:id="@+id/reader_frame_switcher"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+    <alex.mirash.mirashreader.content.views.ReaderGestureDetectorView
+        android:id="@+id/reader_gesture_detector"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+</merge>

@@ -32,8 +32,8 @@ public class ContentFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contentView = inflater.inflate(R.layout.reader_content, null);
-        ReaderLayout readerLayout = (ReaderLayout) contentView.findViewById(R.id.reader_layout);
-        mReaderController.setReaderLayout(readerLayout);
+        mReaderLayout = (ReaderLayout) contentView.findViewById(R.id.reader_layout);
+        initReaderLayout();
         return contentView;
     }
 
@@ -41,5 +41,14 @@ public class ContentFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         mReaderController.clear();
+        removeReaderCallbacks();
+    }
+
+    private void initReaderLayout() {
+        mReaderLayout.setGesturesDetectorCallback(null/*mReaderController*/);
+    }
+
+    private void removeReaderCallbacks() {
+        mReaderLayout.setGesturesDetectorCallback(null);
     }
 }

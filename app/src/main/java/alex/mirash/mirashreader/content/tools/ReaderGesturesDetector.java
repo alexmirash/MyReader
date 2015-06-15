@@ -1,4 +1,4 @@
-package alex.mirash.mirashreader.content;
+package alex.mirash.mirashreader.content.tools;
 
 import android.content.Context;
 import android.view.GestureDetector;

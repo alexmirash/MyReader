@@ -41,11 +41,7 @@ public class ReaderApplication extends Application {
         mContentProvider = new ContentProvider();
     }
 
-    private void initContentProvider() {
-        mContentProvider = new ContentProvider();
-    }
-
-    ContentProvider getReaderContentProvider() {
+    public ContentProvider getReaderContentProvider() {
         return mContentProvider;
     }
 }

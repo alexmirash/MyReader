@@ -1,15 +1,13 @@
 package alex.mirash.mirashreader.content.views;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.MotionEvent;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import alex.mirash.mirashreader.content.ReaderGesturesDetector;
+import alex.mirash.mirashreader.R;
+import alex.mirash.mirashreader.content.tools.ReaderGestureCallback;
+import alex.mirash.mirashreader.content.tools.ReaderGesturesDetector;
 import alex.mirash.mirashreader.properties.GlobalProperties;
 
 import static alex.mirash.mirashreader.utils.LogUtils.log;
@@ -18,12 +16,10 @@ import static alex.mirash.mirashreader.utils.LogUtils.log;
  * @author Mirash
  */
 public class ReaderLayout extends FrameLayout implements ReaderGesturesDetector.ReaderGestureListener {
-    private ReaderGesturesDetector mGestureDetector;
-    private ReaderTextView mTextView;
+    private ReaderGestureDetectorView mReaderGestureDetectorView;
+    private ReaderFrameSwitcherView mReaderFrameSwitcherView;
 
-    private boolean mIsScrollVertical = true;
-
-    private final int DEFAULT_TEXT_SIZE = 15;
+    private ReaderGestureCallback mReaderGestureCallback;
 
     public ReaderLayout(Context context) {
         super(context);
@@ -41,59 +37,37 @@ public class ReaderLayout extends FrameLayout implements ReaderGesturesDetector.
     }
 
     private void init(Context context) {
-        mTextView = new ReaderTextView(context);
-        mTextView.setGravity(Gravity.CENTER);
-        LayoutParams lp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        lp.leftMargin = 90;
-        lp.rightMargin = 90;
-        lp.topMargin = 90;
-        lp.bottomMargin = 90;
-        mTextView.setBackgroundColor(Color.GRAY);
-        mTextView.setTextColor(Color.WHITE);
-        addView(mTextView, lp);
-        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, DEFAULT_TEXT_SIZE);
-
-        mGestureDetector = new ReaderGesturesDetector(context, this);
+        inflate(context, R.layout.reader_container, this);
+        mReaderFrameSwitcherView = (ReaderFrameSwitcherView) findViewById(R.id.reader_frame_switcher);
+        mReaderGestureDetectorView = (ReaderGestureDetectorView) findViewById(R.id.reader_gesture_detector);
+        mReaderGestureDetectorView.setGestureListener(this);
     }
 
-    public void showPreviousPage() {
-        log("showPrevPage");
-    }
-
-    public void showNextPage() {
-        log("showNextPage");
+    public void setGesturesDetectorCallback(ReaderGestureCallback readerGestureCallback) {
+        mReaderGestureCallback = readerGestureCallback;
     }
 
     private void handleFlingEvent(float flingDistance) {
         if (flingDistance > GlobalProperties.getMinimalFlingScrollDistance()) {
-            showNextPage();
+            log("showNextPage");
+            mReaderFrameSwitcherView.showNext();
         } else if (flingDistance < -GlobalProperties.getMinimalFlingScrollDistance()) {
-            showPreviousPage();
+            log("showPreviousPage");
+            mReaderFrameSwitcherView.showPrevious();
         }
-    }
-
-
-    public void setText(String text) {
-        mTextView.setText(text);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        return mGestureDetector.handleTouchEvent(event);
     }
 
     /*~~~~~~~~~~~~~~ reader gestures events ~~~~~~~~~~~~*/
     @Override
     public boolean onScale(float scaleFactor) {
         log("scaleFactor " + scaleFactor);
-        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextView.getFreezedTextSize() * scaleFactor);
-        return false;
+        return mReaderFrameSwitcherView.scaleTextSize(scaleFactor);
     }
 
     @Override
     public boolean onScaleBegin() {
-        log("onScaleBegin");
-        mTextView.freezeTextSize();
+        log("freezeTextSize");
+        mReaderFrameSwitcherView.freezeTextSize();
         return true;
     }
 
@@ -104,7 +78,8 @@ public class ReaderLayout extends FrameLayout implements ReaderGesturesDetector.
 
     @Override
     public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent2, float v, float v2) {
-        return false;
+        log("onScroll " + v + "; " + v2);
+        return true;
     }
 
     @Override
@@ -116,13 +91,12 @@ public class ReaderLayout extends FrameLayout implements ReaderGesturesDetector.
     @Override
     public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent2, float v, float v2) {
         log("onFling " + v + "; " + v2);
-        handleFlingEvent(mIsScrollVertical ? v2 : v);
+        handleFlingEvent(v);
         return false;
     }
 
     @Override
     public void onLongPress(MotionEvent motionEvent) {
-
     }
 
     @Override
